@@ -133,7 +133,7 @@ write.table(plot_df,"figs_df/fig4b_reporter_assay_r1.txt",sep="\t",quote=F,row.n
 # eRNA
 #-----------------------
 # bigwig count
-sample_list <- read.table("enhancer_reporter_assay/eRNA_count_list")
+sample_list <- read.table("enhancer_reporter_assay/eRNA_count_out_list")
 plot_df <- data.frame()
 for (c in 1:length(sample_list$V1)) {
   gain_p <- read.table(paste0("enhancer_reporter_assay/eRNA_counts_r1/",sample_list$V1[c],"_gain_p.bw_count"),sep="\t",header=F)

@@ -10,8 +10,6 @@ library(Rsubread)
 library(grid)
 library(gridExtra)
 
-
-
 link_gene <- read.table("../figs_df/fig3c_ce_link_gene_w_promoter.txt",sep="\t",header=T)
 depmap <- read.table("OmicsExpressionProteinCodingGenesTPMLogp1.csv",sep=",",header=T)
 

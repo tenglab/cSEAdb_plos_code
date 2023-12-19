@@ -13,7 +13,7 @@ library(pheatmap)
 source("~/Projects/super_enhancer/gene_se/scripts/se_reduce_functions.R")
 
 
-e_reduce <- read.table("all_enhancer_reduce_filtered.bed",header=F,sep="\t")
+e_reduce <- read.table("results/all_enhancer_reduce_filtered_r1.bed",header=F,sep="\t")
 e_reduce$merge_e_name <- paste(e_reduce$V1,e_reduce$V2,e_reduce$V3,sep="_")
 cell_meta <- read.table("../cell_meta.txt",header=T,sep="\t")
 sample_list <- read.table("../sample_list",sep="\t",header=F)
@@ -59,8 +59,8 @@ for (a in 1:length(merge_count_list)) {
 
 # save matrix
 count_matrix_df <- count_matrix_df[,-c(2,3,4)]
-write.table(count_matrix_df,"results/all_enhancer_10p_overlap_signal_raw_120cell.txt",
-            sep="\t",row.names = F,quote=F)
+# write.table(count_matrix_df,"results/all_enhancer_10p_overlap_signal_raw_120cell.txt",
+#             sep="\t",row.names = F,quote=F)
 
 #-----------------------------------------------------
 # DESeq2 normalize
@@ -87,8 +87,8 @@ dds <- DESeqDataSetFromMatrix(countData = count_matrix,
 dds <- estimateSizeFactors(dds)
 normalized_count <- as.data.frame(round(counts(dds,normalized=TRUE),digits=3))
 normalized_count$merge_e_name <- row.names(normalized_count)
-write.table(normalized_count,"results/all_enhancer_signal_normalized_120cell.txt",
-            sep="\t",row.names = F,quote=F)
+# write.table(normalized_count,"results/all_enhancer_signal_normalized_120cell.txt",
+#             sep="\t",row.names = F,quote=F)
 
 # 120 sample to 60 sample
 colnames(normalized_count) <- gsub("_rep1|_rep2","",colnames(normalized_count))
@@ -104,7 +104,9 @@ write.table(normalized_count,"results/all_enhancer_signal_normalized_60cell.txt"
 # read SEs
 #-----------------------------------------------------
 # extract CE count
-se_reduce <- read.table("se_reduce_r1.bed",sep="\t",header=F)
+se_reduce <- read.table("results/se_reduce_r1.bed",sep="\t",header=F)
+se_reduce$V4 <- paste(se_reduce$V1,se_reduce$V2,se_reduce$V3,sep="_")
+
 se_gr <- GRanges(
   seqnames=se_reduce$V1,
   ranges=IRanges(se_reduce$V2,se_reduce$V3,

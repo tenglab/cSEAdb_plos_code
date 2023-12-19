@@ -78,7 +78,7 @@ write.table(se_cluster_score,"figs_df/fig4a_se_cell_cutoff_vi_score_r1.txt",quot
 # find cutoff ggplot
 p <- ggplot(se_cluster_score,aes(x=cut,y=vi_score,group=1),alpha = 0.5)+
   geom_point()+
-  geom_smooth(method="loess",se=F,span = 0.85,color="red")+
+  geom_smooth(method="loess",se=F,span = 0.8,color="red")+
   theme_classic()+
   #ylim(c(2.15,2.3))+
   theme(axis.text.x = element_text(size=10,angle=90),
@@ -96,14 +96,14 @@ cutoff <- lowes_fit$x[which.min(abs(slop_xy-1))]
 
 
 #------------------------------------------------------------------
-# set cutoff = 0.22
+# set cutoff = 0.21
 #------------------------------------------------------------------
 se_name <- unique(mixture_keep$se_name)
 
 se_cell_spec_gain <- data.frame()
 se_cell_spec_loss <- data.frame()
 
-cutoff <- 0.22
+cutoff <- 0.21
 # loop se
 for (se in 1:length(se_name)) {
   if(se %% 500 ==0 ){

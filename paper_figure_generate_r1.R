@@ -134,10 +134,10 @@ binary_more_3 <- ce_peak_plot_df_6[which(ce_peak_plot_df_6$group=="Coverage more
 ggplot(binary_more_3, aes(x=as.factor(n_1), y=n)) +
   geom_bar(stat="identity",fill=brewer.pal(2,"Blues")[2])+
   theme_classic()+
-  #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.x = element_blank())+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  # theme(axis.text.x = element_blank(),
+  #       axis.text.y = element_blank(),
+  #       axis.ticks.x = element_blank())+
   xlab("Number of cell CE present")+
   ylab("Number of CE")
 #theme(axis.text.x = element_blank())
@@ -307,8 +307,8 @@ ggplot(pie_df,aes(x="",y=count,fill=group))+
     plot.title=element_blank(),
     axis.text.x=element_blank()
   )+
-  # geom_label_repel(aes(label = paste0(count,"(",percent,"%)")),
-  #           position=position_stack(vjust = 0.5),size=4)+
+  geom_label_repel(aes(label = paste0(count,"(",percent,"%)")),
+            position=position_stack(vjust = 0.5),size=4)+
   scale_fill_manual(values = brewer.pal(5,"Dark2"))
 
 #--------------------
@@ -327,7 +327,7 @@ v <- venn.diagram(x=list(model_activate$pair,peak_activate$pair),
              category.names = c("model",paste("peak", "calling",sep="\n")),
              fill = c(brewer.pal(8,"Paired")[7],brewer.pal(8,"Blues")[5]),
              alpha=c(1,1),
-             cex=0,
+             cex=1,
              cat.cex=0,
              filename=NULL,
              #filename="figs_df/fig2d_venn_no_text.png",
@@ -336,9 +336,9 @@ v <- venn.diagram(x=list(model_activate$pair,peak_activate$pair),
 grid.newpage()
 grid.draw(v)
 
-52075/(52075+724696+39227)
-724696/(52075+724696+39227)
-39227/(52075+724696+39227)
+53056/(53056+727962+39980)
+727962/(53056+727962+39980)
+39980/(53056+727962+39980)
 
 #------------------------
 # fig3 compare of binary
@@ -374,15 +374,15 @@ link_summary_2 <- link_summary[!(link_summary$signal==0&link_summary$group=="com
 link_summary_2$mean_link_score <- log2(link_summary_2$mean_link_score+1)
 link_summary_2$n_link <- log2(link_summary_2$n_link+1)
 
-(mean(link_summary_2$n_link[which(link_summary_2$cell=="A549"&link_summary_2$group=="b0_m1")])+
-    mean(link_summary_2$n_link[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="b0_m1")])+
-    mean(link_summary_2$n_link[which(link_summary_2$cell=="K.562"&link_summary_2$group=="b0_m1")])+
-    mean(link_summary_2$n_link[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="b0_m1")]))/4
+(mean(link_summary_2$n_link[which(link_summary_2$cell=="A549"&link_summary_2$group=="model only")])+
+    mean(link_summary_2$n_link[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="model only")])+
+    mean(link_summary_2$n_link[which(link_summary_2$cell=="K.562"&link_summary_2$group=="model only")])+
+    mean(link_summary_2$n_link[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="model only")]))/4
 
-(mean(link_summary_2$n_link[which(link_summary_2$cell=="A549"&link_summary_2$group=="b1_m0")])+
-    mean(link_summary_2$n_link[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="b1_m0")])+
-    mean(link_summary_2$n_link[which(link_summary_2$cell=="K.562"&link_summary_2$group=="b1_m0")])+
-    mean(link_summary_2$n_link[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="b1_m0")]))/4
+(mean(link_summary_2$n_link[which(link_summary_2$cell=="A549"&link_summary_2$group=="peak only")])+
+    mean(link_summary_2$n_link[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="peak only")])+
+    mean(link_summary_2$n_link[which(link_summary_2$cell=="K.562"&link_summary_2$group=="peak only")])+
+    mean(link_summary_2$n_link[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="peak only")]))/4
 
 cell_line <- unique(link_summary_2$cell)
 pvalue <- data.frame()
@@ -415,7 +415,7 @@ ggplot(link_summary_2,aes(x=cell,y=n_link,fill=group))+
   #geom_point(position=position_jitterdodge(jitter.width=0.1,dodge.width=0.6),
   #           cex=0.3)+
   theme_classic()+
-  #ylim(c(0,7.5))+
+  ylim(c(0,10))+
   #ylab("log2(mean_link_score+1)")+
   scale_fill_manual(values = c(brewer.pal(8,"Paired")[8],
                                brewer.pal(8,"Blues")[8],
@@ -431,15 +431,15 @@ link_gene_summary <- read.table("figs_df/fig3c_ce_link_gene_w_promoter_summary_r
 # calculate p-value
 link_summary_2 <- link_gene_summary[!(link_gene_summary$signal==0 &link_gene_summary$group=="common"),]
 
-(mean(link_summary_2$n_gene[which(link_summary_2$cell=="A549"&link_summary_2$group=="b0_m1")])+
-  mean(link_summary_2$n_gene[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="b0_m1")])+
-  mean(link_summary_2$n_gene[which(link_summary_2$cell=="K.562"&link_summary_2$group=="b0_m1")])+
-  mean(link_summary_2$n_gene[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="b0_m1")]))/4
+(mean(link_summary_2$n_gene[which(link_summary_2$cell=="A549"&link_summary_2$group=="model only")])+
+  mean(link_summary_2$n_gene[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="model only")])+
+  mean(link_summary_2$n_gene[which(link_summary_2$cell=="K.562"&link_summary_2$group=="model only")])+
+  mean(link_summary_2$n_gene[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="model only")]))/4
 
-(mean(link_summary_2$n_gene[which(link_summary_2$cell=="A549"&link_summary_2$group=="b1_m0")])+
-    mean(link_summary_2$n_gene[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="b1_m0")])+
-    mean(link_summary_2$n_gene[which(link_summary_2$cell=="K.562"&link_summary_2$group=="b1_m0")])+
-    mean(link_summary_2$n_gene[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="b1_m0")]))/4
+(mean(link_summary_2$n_gene[which(link_summary_2$cell=="A549"&link_summary_2$group=="peak only")])+
+    mean(link_summary_2$n_gene[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="peak only")])+
+    mean(link_summary_2$n_gene[which(link_summary_2$cell=="K.562"&link_summary_2$group=="peak only")])+
+    mean(link_summary_2$n_gene[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="peak only")]))/4
 
 cell_line <- unique(link_summary_2$cell)
 pvalue <- data.frame()
@@ -482,6 +482,80 @@ ggplot(link_summary_2,aes(x=cell,y=n_gene,fill=group))+
   scale_color_manual(values = c(brewer.pal(8,"Paired")[8],
                                 brewer.pal(8,"Blues")[8],
                                 "grey50"))
+#------------
+# fig_3d
+#------------
+
+# make plot data frame
+depmap_g_ranking_ratio <- read.table("results/depmap_gene_ranking_ratio.txt",sep="\t",header=T)
+depmap_g_ranking_ratio_2 <- depmap_g_ranking_ratio[which(depmap_g_ranking_ratio$cell %in%
+                                                           c("ACH-000681","ACH-000971","ACH-000551","ACH-000019")),]
+
+depmap_rank_2 <- as.data.frame(t(depmap_g_ranking_ratio_2))
+colnames(depmap_rank_2) <- c("HCT.116","MCF7","A549","K.562")
+depmap_rank_2 <- depmap_rank_2[-1,]
+depmap_rank_2$gene_name <- row.names(depmap_rank_2)
+
+link_gene <- read.table("../figs_df/fig3c_ce_link_gene_w_promoter.txt",sep="\t",header=T)
+depmap_2_long <- gather(depmap_rank_2,cell,ratio,HCT.116:K.562)
+link_gene_summary <- merge(link_gene,depmap_2_long,by=c("cell","gene_name"))
+
+# calculate p-value
+link_summary_2 <- unique(link_gene_summary[!(link_gene_summary$signal==0 &link_gene_summary$group=="common"),])
+
+link_summary_2$ratio <- as.numeric(link_summary_2$ratio)
+link_summary_2$group <- factor(link_summary_2$group,levels=c("b0_m1","b1_m0","common"))
+ggplot(link_summary_2,aes(x=cell,y=ratio,fill=group))+
+  #geom_boxplot(outlier.shape = NA,width=0.5,position=position_dodge(0.6))+
+  geom_boxplot(outlier.shape = NA,width=0.5,position=position_dodge(0.6))+
+  #geom_violin(outlier.shape = NA,width=0.5,position=position_dodge(0.6))+
+  #geom_point(position=position_jitterdodge(jitter.width=0.1,dodge.width=0.6),
+  #           cex=0.3)+
+  theme_classic()+
+  #ylim(c(0,25))+
+  ylab("depmap ranking ratio")+
+  scale_fill_manual(values = c(brewer.pal(8,"Paired")[8],
+                               brewer.pal(8,"Blues")[8],
+                               "grey50"))+
+  scale_color_manual(values = c(brewer.pal(8,"Paired")[8],
+                                brewer.pal(8,"Blues")[8],
+                                "grey50"))
+
+(mean(link_summary_2$ratio[which(link_summary_2$cell=="A549"&link_summary_2$group=="b0_m1")])+
+    mean(link_summary_2$ratio[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="b0_m1")])+
+    mean(link_summary_2$ratio[which(link_summary_2$cell=="K.562"&link_summary_2$group=="b0_m1")])+
+    mean(link_summary_2$ratio[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="b0_m1")]))/4
+
+(mean(link_summary_2$ratio[which(link_summary_2$cell=="A549"&link_summary_2$group=="b1_m0")])+
+    mean(link_summary_2$ratio[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="b1_m0")])+
+    mean(link_summary_2$ratio[which(link_summary_2$cell=="K.562"&link_summary_2$group=="b1_m0")])+
+    mean(link_summary_2$ratio[which(link_summary_2$cell=="MCF7"&link_summary_2$group=="b1_m0")]))/4
+
+
+
+cell_line <- unique(link_summary_2$cell)
+pvalue <- data.frame()
+for (c in 1:4) {
+  tmp_link <- link_summary_2[which(link_summary_2$cell==cell_line[c]),]
+  ttest_1 <- wilcox.test(tmp_link$ratio[which(tmp_link$group=="b0_m1")],
+                         tmp_link$ratio[which(tmp_link$group=="b1_m0")],
+                         alternative="greater")
+  
+  ttest_2 <- wilcox.test(tmp_link$ratio[which(tmp_link$group=="b0_m1")],
+                         tmp_link$ratio[which(tmp_link$group=="common")],
+                         alternative="greater")
+  
+  ttest_3 <- wilcox.test(tmp_link$ratio[which(tmp_link$group=="b1_m0")],
+                         tmp_link$ratio[which(tmp_link$group=="common")],
+                         alternative="less")
+  pvalue_tmp <- data.frame(cell=cell_line[c],
+                           gain_loss=ttest_1$p.value,
+                           gain_not=ttest_2$p.value,
+                           loss_not=ttest_3$p.value)
+  pvalue <- rbind(pvalue,pvalue_tmp)
+}
+pvalue
+table(link_summary_2$cell,link_summary_2$group)
 
 #------------------------
 # fig4a
@@ -489,7 +563,7 @@ ggplot(link_summary_2,aes(x=cell,y=n_gene,fill=group))+
 se_cluster_score <- read.table("figs_df/fig4a_se_cell_cutoff_vi_score_r1.txt",sep="\t",header=T)
 ggplot(se_cluster_score,aes(x=cut,y=vi_score,group=1),alpha = 0.6)+
   geom_point()+
-  geom_smooth(method="loess",se=F,span = 0.85,color="red")+
+  geom_smooth(method="loess",se=F,span = 0.8,color="red")+
   theme_classic()+
   #ylim(c(2.15,2.3))+
   theme(axis.text.x = element_text(size=10,angle=90),
@@ -569,16 +643,13 @@ pvalue <- data.frame()
 for (c in 1:length(cell_line)) {
   tmp_link <- plot_df_2[which(plot_df_2$cell==cell_line[c]),]
   ttest_1 <- wilcox.test(tmp_link$signal[which(tmp_link$group=="gain")],
-                         tmp_link$signal[which(tmp_link$group=="loss")],
-                    alternative="greater")
+                         tmp_link$signal[which(tmp_link$group=="loss")])
 
   ttest_2 <- wilcox.test(tmp_link$signal[which(tmp_link$group=="gain")],
-                         tmp_link$signal[which(tmp_link$group=="non_spec")],
-                    alternative="greater")
+                         tmp_link$signal[which(tmp_link$group=="non_spec")])
 
   ttest_3 <- wilcox.test(tmp_link$signal[which(tmp_link$group=="loss")],
-                         tmp_link$signal[which(tmp_link$group=="non_spec")],
-                    alternative="less")
+                         tmp_link$signal[which(tmp_link$group=="non_spec")])
   pvalue_tmp <- data.frame(cell=cell_line[c],
                            gain_loss=ttest_1$p.value,
                            gain_not=ttest_2$p.value,
@@ -675,7 +746,7 @@ for (i in 1:length(cancer_n)) {
   se_cancer <- rbind(se_cancer,se_cancer_tmp)
 }
 
-#write.table(se_cancer,"figs_df/fig_s1_cancer_se_count.txt",sep="\t",quote=F,row.names = F)
+write.table(se_cancer,"figs_df/fig_s2_cancer_se_count.txt",sep="\t",quote=F,row.names = F)
 
 se_cancer_count <- read.table("figs_df/fig_s2_cancer_se_count.txt",sep="\t",header=T)
 
@@ -773,70 +844,6 @@ ggplot(plot_df_2,aes(x=cell,y=log2(signal+1),fill=group))+
 
 
 #------------
-# fig_s9
-
-# make plot data frame
-depmap_g_ranking_ratio <- read.table("results/depmap_gene_ranking_ratio.txt",sep="\t",header=T)
-depmap_g_ranking_ratio_2 <- depmap_g_ranking_ratio[which(depmap_g_ranking_ratio$cell %in%
-                                                           c("ACH-000681","ACH-000971","ACH-000551","ACH-000019")),]
-
-depmap_rank_2 <- as.data.frame(t(depmap_g_ranking_ratio_2))
-colnames(depmap_rank_2) <- c("HCT.116","MCF7","A549","K.562")
-depmap_rank_2 <- depmap_rank_2[-1,]
-depmap_rank_2$gene_name <- row.names(depmap_rank_2)
-
-link_gene <- read.table("../figs_df/fig3c_ce_link_gene_w_promoter.txt",sep="\t",header=T)
-depmap_2_long <- gather(depmap_rank_2,cell,ratio,HCT.116:K.562)
-link_gene_summary <- merge(link_gene,depmap_2_long,by=c("cell","gene_name"))
-
-# calculate p-value
-link_summary_2 <- unique(link_gene_summary[!(link_gene_summary$signal==0 &link_gene_summary$group=="common"),])
-
-link_summary_2$ratio <- as.numeric(link_summary_2$ratio)
-link_summary_2$group <- factor(link_summary_2$group,levels=c("b0_m1","b1_m0","common"))
-ggplot(link_summary_2,aes(x=cell,y=ratio,fill=group))+
-  #geom_boxplot(outlier.shape = NA,width=0.5,position=position_dodge(0.6))+
-  geom_boxplot(outlier.shape = NA,width=0.5,position=position_dodge(0.6))+
-  #geom_violin(outlier.shape = NA,width=0.5,position=position_dodge(0.6))+
-  #geom_point(position=position_jitterdodge(jitter.width=0.1,dodge.width=0.6),
-  #           cex=0.3)+
-  theme_classic()+
-  #ylim(c(0,25))+
-  ylab("depmap ranking ratio")+
-  scale_fill_manual(values = c(brewer.pal(8,"Paired")[8],
-                               brewer.pal(8,"Blues")[8],
-                               "grey50"))+
-  scale_color_manual(values = c(brewer.pal(8,"Paired")[8],
-                                brewer.pal(8,"Blues")[8],
-                                "grey50"))
-
-
-cell_line <- unique(link_summary_2$cell)
-pvalue <- data.frame()
-for (c in 1:4) {
-  tmp_link <- link_summary_2[which(link_summary_2$cell==cell_line[c]),]
-  ttest_1 <- wilcox.test(tmp_link$ratio[which(tmp_link$group=="b0_m1")],
-                         tmp_link$ratio[which(tmp_link$group=="b1_m0")],
-                         alternative="greater")
-
-  ttest_2 <- wilcox.test(tmp_link$ratio[which(tmp_link$group=="b0_m1")],
-                         tmp_link$ratio[which(tmp_link$group=="common")],
-                         alternative="greater")
-
-  ttest_3 <- wilcox.test(tmp_link$ratio[which(tmp_link$group=="b1_m0")],
-                         tmp_link$ratio[which(tmp_link$group=="common")],
-                         alternative="less")
-  pvalue_tmp <- data.frame(cell=cell_line[c],
-                           gain_loss=ttest_1$p.value,
-                           gain_not=ttest_2$p.value,
-                           loss_not=ttest_3$p.value)
-  pvalue <- rbind(pvalue,pvalue_tmp)
-}
-pvalue
-table(link_summary_2$cell,link_summary_2$group)
-
-
-#------------
 # paper number summary
 #------------
 cSEAdb <- readRDS("results/cSEAdb_r1.rds")
@@ -851,9 +858,11 @@ ce_binary <- ce_binary[which(ce_binary$max_percent>3),]
 ce_binary$rowmean <- apply(ce_binary[,c(4:63)],1,sum)
 length(unique(ce_binary$ce_name[which(ce_binary$rowmean==60)]))/length(unique(ce_binary$ce_name))
 
+length(unique(ce_binary$se_name[which(ce_binary$rowmean==60)]))/length(unique(ce_binary$se_name))
+
 se_cancer_spec <- se_spec[which(se_spec$object_type=="cancer"),]
 
-length(unique(se_cancer_spec$se_name[which(se_cancer_spec$number_spec_object>3)]))
+length(unique(se_cancer_spec$se_name[which(se_cancer_spec$number_spec_object>=2)]))
 
 # se cancer cell line
 se_cancer_count <- read.table("figs_df/fig_s2_cancer_se_count.txt",sep="\t",header=T)

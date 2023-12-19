@@ -13,63 +13,6 @@ mem.maxVSize(vsize = Inf)
 
 #chr1_66443354_66447012
 
-#--------------------------------------
-# custom package
-#--------------------------------------
-#----
-
-test <- Mclust(ce_tmp,G=2)
-test_2 <- Mclust(ce_tmp,G=c(1,2))
-em_mixture <- function(y,mu0=0.5,mu1=1,sigma0=0.5,sigma1=1,
-                       p=0.5,
-                       converge=1e-3) {
-
-  # initialization
-  logp0 <- dnorm(y, mean = mu0, sd = sigma0, log = TRUE)
-  logp1 <- dnorm(y, mean = mu1, sd = sigma1, log = TRUE)
-  #z <- (p1*p)/(p1*p+p0*(1-p))
-
-  z <- 1/(1+exp(logp0-logp1)*(1-p)/p)
-  if (all(z ==1)) {
-    return(list(z=z))
-  } else {
-    llf <- sum(z*(logp1+log(p)) + (1-z)*(logp0+log(1-p)))
-    llgap <- llf
-    i <- 0
-    while((abs(llgap) > (abs(llf) * converge) && i < 2000 && (!is.na(llf)))){
-      #mstep
-      i <- i+1
-      p <- (2+sum(z))/(2*2+length(z))
-      mu1 <- sum(z*y)/sum(z)
-      mu0 <- sum((1-z)*y)/sum(1-z)
-      sigma1 <- sqrt(sum(z*(y-mu1)^2)/sum(z))
-      sigma0 <- sqrt(sum((1-z)*(y-mu0)^2)/sum(1-z))
-
-      # estep
-      logp0 <- dnorm(y, mean = mu0, sd = sigma0, log = TRUE)
-      logp1 <- dnorm(y, mean = mu1, sd = sigma1, log = TRUE)
-
-      z <- 1/(1+exp(logp0-logp1)*(1-p)/p)
-      lli <- sum(z*(logp1+log(p)) + (1-z)*(logp0+log(1-p)))
-
-      llgap <- lli - llf
-      llf <- lli
-    }
-
-    if(is.na(mu0) && !is.na(mu1)) {
-      z[is.na(z)] <- 1
-    } else if (!is.na(mu0) && is.na(mu1)) {
-      z[is.na(z)] <- 0
-    } else {
-      z <- z
-    }
-
-    return(list(p=p,mu1=mu1,mu0=mu0,sigma1=sigma1,sigma0=sigma0,z=z))
-  }
-
-}
-
-
 
 #--------------------------------------
 # all enhancer mixture prior
@@ -117,7 +60,6 @@ se_ce <- se_ce_tmp %>% mutate_at(c(2:61),~replace(., . == 0, min(.[.>0], na.rm =
 
 se_ce[,c(2:61)] <- log2(se_ce[,c(2:61)])
 se_name <- unique(se_ce$se_name)
-se <- which(se_name==se_ce_tmp$se_name[which(se_ce_tmp$merge_e_name=="chr1_66443354_66447012")])
 
 source("~/Projects/super_enhancer/se_data_portal/new_analysis/cSEAdb_revision/scripts/normalmixEM2comp_r1.R")
 
@@ -264,6 +206,7 @@ compare_df[which(compare_df$mod==0&compare_df$signal>1000),]
 
 mod2 <- read.table("results/filtered_ce_mixture_model_r1.txt",sep="\t",header=T)
 binary_ce <- read.table("results/s1_ce_binary_w_percent.txt",sep="\t",header=T)
+
 
 # peak calling--------
 binary_selected <- binary_ce[which(binary_ce$max_percent > 3),-2]
