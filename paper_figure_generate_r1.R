@@ -844,6 +844,21 @@ ggplot(plot_df_2,aes(x=cell,y=log2(signal+1),fill=group))+
 
 
 #------------
+# fig_s11
+
+se_width <- read.table("results/se_test_summary_0.01.txt",sep="\t",header=T)
+ce_width <- read.table("results/ce_width_summary_0.01.txt",sep="\t",header=T)
+
+plot_df <- se_width[which(se_width$group %in% seq(0,0.26,0.01)),]
+plot_df <- ce_width[which(ce_width$group %in% seq(0.09,0.31,0.01)),]
+
+ggplot(plot_df,aes(x=group,y=log2(n)))+
+  geom_line()+
+  #geom_smooth(span=0.9)+
+  theme_classic()
+
+
+#------------
 # paper number summary
 #------------
 cSEAdb <- readRDS("results/cSEAdb_r1.rds")

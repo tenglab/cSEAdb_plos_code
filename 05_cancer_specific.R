@@ -18,7 +18,7 @@ meta_data$Cancer <- gsub("-|,| ",".",meta_data$Cancer)
 cancer_freq <- data.frame(table(meta_data$Cancer))
 
 # loop spec ce
-spec_ce <- unique(cell_spec[which(cell_spec$specifity !="none"),c("se_name","spec_ce","spec_object","specifity")])
+spec_ce <- unique(cell_spec[which(cell_spec$specificity !="none"),c("se_name","spec_ce","spec_object","specificity")])
 
 se_name <- unique(spec_ce$se_name)
 se_spec_cancer_final <- data.frame()
@@ -45,14 +45,14 @@ for (c in 1:length(se_name)) {
                                     spec_ce=se_tmp$spec_ce,
                                     number_spec_object=nrow(cancer_freq_tmp_3),
                                     spec_object=paste(cancer_freq_tmp_3$Var1,collapse=","),
-                                    specifity=se_tmp$specifity,
+                                    specificity=se_tmp$specificity,
                                     object_type="cancer")
     } else {
       spec_cancer_tmp <- data.frame(se_name=se_tmp$se_name,
                                     spec_ce="none",
                                     number_spec_object=0,
                                     spec_object="none",
-                                    specifity="none",
+                                    specificity="none",
                                     object_type="cancer")
     }
 

@@ -38,7 +38,6 @@ write.table(prior_df,"results/all_ce_prior_r1.txt",sep="\t",quote = F,row.names 
 #------------------
 # prior
 prior_df <- read.table("results/all_ce_prior_r1.txt",sep="\t",header=T)
-#prior_df2 <- read.table("results/all_ce_prior_r2.txt",sep="\t",header=T)
 
 u1 <- prior_df$u1
 u2 <- prior_df$u2
@@ -51,17 +50,12 @@ se_ce_tmp <- read.table("results/ce_signal_normalized_60cell_filtered.txt",sep="
 
 # 0 imputation with half of min value
 se_ce <- se_ce_tmp %>% mutate_at(c(2:61),~replace(., . == 0, min(.[.>0], na.rm = TRUE)/2))
-#se_ce <- se_ce_tmp %>% mutate_at(c(2:61),~replace(., . == 0, rnorm(47594,mean=u1,sd=sd1)))
-
-
-#A549 example: chr1_66443354_66447012
-
 
 
 se_ce[,c(2:61)] <- log2(se_ce[,c(2:61)])
 se_name <- unique(se_ce$se_name)
 
-source("~/Projects/super_enhancer/se_data_portal/new_analysis/cSEAdb_revision/scripts/normalmixEM2comp_r1.R")
+source("~/Projects/super_enhancer/se_data_portal/new_analysis/cSEAdb_revision/scripts/em_mixture.R")
 
 #se=9
 #ce=4
@@ -75,7 +69,6 @@ for (se in 1:length(se_name)) {
   rownames(se_tmp) <- se_tmp$merge_e_name
   matrix_tmp <- t(as.matrix(se_tmp[,-c(1,62)]))
   matrix_out <- matrix_tmp
-  ce <- which(se_tmp$merge_e_name=="chr1_66443354_66447012")
 
   # check each CE within SE
   for (ce in 1:ncol(matrix_tmp)) {
@@ -99,10 +92,10 @@ for (se in 1:length(se_name)) {
       ce_mod <- ce_tmp[ce_tmp<u2+sd2]
       ce_mod_name <- names(ce_mod)
 
-      mix_mod <- normalmixEM2comp_r1(ce_mod,
-                                     lambda = c(prior_df$p1,prior_df$p2),
-                                     mu=c(prior_df$u1,prior_df$u2),
-                                     sigsqrd=c(prior_df$sd1,prior_df$sd2))
+      mix_mod <- em_mixture(ce_mod,
+                            p = c(prior_df$p1,prior_df$p2),
+                            mu=c(prior_df$u1,prior_df$u2),
+                            sd=c(prior_df$sd1,prior_df$sd2))
 
       #plot(ce_mod,mix_mod$posterior[,2],pch=16)
       #------------
@@ -156,8 +149,6 @@ for (se in 1:length(se_name)) {
     }
   }
 
-  #cbind(mix_mod$posterior[,2],ce_mod)
-  #cbind(t(ce_raw),ce_tmp,matrix_out[,ce])
   matrix_out <- data.frame(t(matrix_out))
 
   # add se_name

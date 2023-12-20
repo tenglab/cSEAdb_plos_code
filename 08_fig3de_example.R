@@ -129,5 +129,96 @@ write.table(peak_no_link_2,"figs_df/fig3_examples_peak_no_link_r1.txt",sep="\t",
 # chr17_74988638_74988956 HCT116
 # chr14_60655908_60656970 A549
 
+#------------------------
+# MYC example
+#------------------------
+cSEAdb <- readRDS("results/cSEAdb_r1.rds")
+ce_bed <- cSEAdb$ce_bed
+gene_promoter <- cSEAdb$gene_promotor
+gene_promoter <- gene_promoter[which(gene_promoter$V4=="MYC"),]
+gene_gr <- GRanges(seqnames = gene_promoter$V1,
+                   IRanges(gene_promoter$V2,gene_promoter$V3))
+ce_gr <- GRanges(seqnames= ce_bed$chr, IRanges(as.integer(ce_bed$start),as.integer(ce_bed$end)))
 
+# myc SE 
+# se_l: chr8_127178792_127312718
+# se_r: chr8_128014461_128230381
+
+se_myc <- GRanges(seqnames = c("chr8","chr8"),
+                  IRanges(c(127178792,128014461),c(127312718,128230381)))
+
+# extract CE
+
+ce_ol <- findOverlaps(ce_gr,se_myc)
+
+ce_myc_l <- ce_gr[queryHits(ce_ol)[which(subjectHits(ce_ol)==1)]] 
+ce_myc_r <- ce_gr[queryHits(ce_ol)[which(subjectHits(ce_ol)==2)]]
+
+# extract myc and CE links
+cell_line <- c("A549","HCT.116","K.562","MCF7")
+chiapet <- c("A549","HCT116","K562","MCF7")
+for (c in 1:4) {
+  print(c)
+  cell_chia <- read.table(paste0("chiapet/",chiapet[c],".bedpe"),sep="\t",header=F)
+  # link grange
+  left_link <- GRanges(seqnames = cell_chia$V1,
+                       IRanges(cell_chia$V2,cell_chia$V3))
+  right_link <- GRanges(seqnames = cell_chia$V4,
+                        IRanges(cell_chia$V5,cell_chia$V6))
+  
+  #----------------------------------------
+  # extract all ce~gene links
+  #----------------------------------------
+  
+  # left ce right myc
+  l_c_all <- findOverlaps(ce_myc_l,left_link)
+  r_g_all <- findOverlaps(gene_gr,right_link)
+  
+  # left myc right ce
+  r_c_all <- findOverlaps(ce_myc_r,right_link)
+  l_g_all <- findOverlaps(gene_gr,left_link)
+  
+  # intersect
+  l_inter <- unique(intersect(subjectHits(l_c_all),subjectHits(r_g_all)))
+  r_inter <- unique(intersect(subjectHits(r_c_all),subjectHits(l_g_all)))
+
+  # extract links
+  link_l <- cell_chia[c(l_inter,r_inter),]
+  
+  write.table(link_l,paste0("figs_df/fig5_igv_",cell_line[c],"_link_myc.bedpe"),sep="\t",row.names = F,
+              quote = F,col.names = F)
+  
+  link_l_2 <- link_l[which(link_l$V7>4),]
+  write.table(link_l_2,paste0("figs_df/fig5_igv_",cell_line[c],"_link_myc_4plus.bedpe"),sep="\t",row.names = F,
+              quote = F,col.names = F)
+  
+}
+
+se_spec <- cSEAdb$se_specificity
+
+ce_mod <- cSEAdb$ce_mixtrue_model_cell
+ce_myc <- ce_mod[which(ce_mod$se_name %in% c("chr8_127178792_127312718","chr8_128014461_128230381")),]
+
+
+myc_ce_bed <- data.frame(V1=sapply(strsplit(ce_myc$ce_name,"_"),"[[",1),
+                             V2=sapply(strsplit(ce_myc$ce_name,"_"),"[[",2),
+                             V3=sapply(strsplit(ce_myc$ce_name,"_"),"[[",3))
+
+write.table(myc_ce_bed,"figs_df/fig5_myc_ce.bed",quote = F,row.names = F,sep="\t",col.names = F)
+
+myc_se_bed <- data.frame(V1=sapply(strsplit(ce_myc$se_name,"_"),"[[",1),
+                         V2=sapply(strsplit(ce_myc$se_name,"_"),"[[",2),
+                         V3=sapply(strsplit(ce_myc$se_name,"_"),"[[",3))
+myc_se_bed <- unique(myc_se_bed)
+write.table(myc_se_bed,"figs_df/fig5_myc_se.bed",quote = F,row.names = F,sep="\t",col.names = F)
+
+# extract cell line
+ce_myc_target_cell <- ce_myc[,c("A549","HCT.116","K.562","MCF7","ce_name","se_name")]
+
+write.table(ce_myc_target_cell,"results/fig5_ce_model_results.txt",quote = F,row.names = F,sep="\t",col.names = F)
+
+
+
+se_spec[which(se_spec$spec_ce %in% ce_myc_target_cell$ce_name & se_spec$object_type=="cell"),]
+se_spec[which(se_spec$spec_ce %in% ce_myc_target_cell$ce_name & se_spec$object_type=="cancer"),]
 

@@ -78,7 +78,7 @@ write.table(se_cluster_score,"figs_df/fig4a_se_cell_cutoff_vi_score_r1.txt",quot
 # find cutoff ggplot
 p <- ggplot(se_cluster_score,aes(x=cut,y=vi_score,group=1),alpha = 0.5)+
   geom_point()+
-  geom_smooth(method="loess",se=F,span = 0.8,color="red")+
+  geom_smooth(method="loess",se=F,span = 0.85,color="red")+
   theme_classic()+
   #ylim(c(2.15,2.3))+
   theme(axis.text.x = element_text(size=10,angle=90),
@@ -209,25 +209,25 @@ cell_gain <- read.table("results/se_cell_spec_gain_020_r1.txt",sep="\t",header=T
 cell_loss <- read.table("results/se_cell_spec_loss_020_r1.txt",sep="\t",header=T)
 
 # reformat
-cell_gain$specifity <- NA
-cell_gain$specifity <- ifelse(cell_gain$specific_gain=="yes","gain","no_gain")
+cell_gain$specificity <- NA
+cell_gain$specificity <- ifelse(cell_gain$specific_gain=="yes","active","no_gain")
 cell_gain <- cell_gain[,-c(2)]
-colnames(cell_gain) <- c("se_name","number_spec_ce","number_spec_object","spec_ce","spec_object","specifity")
+colnames(cell_gain) <- c("se_name","number_spec_ce","number_spec_object","spec_ce","spec_object","specificity")
 
-cell_loss$specifity <- NA
-cell_loss$specifity <- ifelse(cell_loss$specific_loss=="yes","loss","no_loss")
+cell_loss$specificity <- NA
+cell_loss$specificity <- ifelse(cell_loss$specific_loss=="yes","inactive","no_loss")
 cell_loss <- cell_loss[,-c(2)]
-colnames(cell_loss) <- c("se_name","number_spec_ce","number_spec_object","spec_ce","spec_object","specifity")
+colnames(cell_loss) <- c("se_name","number_spec_ce","number_spec_object","spec_ce","spec_object","specificity")
 
 # add specific SE
-final_cell_specific_1 <- rbind(cell_gain[which(cell_gain$specifity=="gain"),],
-                               cell_loss[which(cell_loss$specifity=="loss"),])
+final_cell_specific_1 <- rbind(cell_gain[which(cell_gain$specificity=="active"),],
+                               cell_loss[which(cell_loss$specificity=="inactive"),])
 
 # add non specific SE
 final_cell_specific_2 <- rbind(cell_gain,cell_loss)
 
 final_cell_specific_3 <- final_cell_specific_2[!(final_cell_specific_2$se_name %in% final_cell_specific_1$se_name),]
-final_cell_specific_3$specifity <- "none"
+final_cell_specific_3$specificity <- "none"
 final_cell_specific_3 <- unique(final_cell_specific_3)
 
 final_cell_specific <- rbind(final_cell_specific_1,final_cell_specific_3)

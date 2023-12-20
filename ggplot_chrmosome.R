@@ -137,6 +137,52 @@ chrom_bg+
 #   coord_flip()
 
 
+#------------------------
+# fig5d
+#------------------------
+library(GenomicRanges)
+library(rtracklayer)
+library(Gviz)
+library(tidyr)
+library(data.table)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+
+library(devtools)
+devtools::install_github("https://github.com/tenglab/cSEAdb.git")
+
+# load database
+library(cSEAdb)
+
+cSEAdb <- readRDS(system.file("data","cSEAdb.rds",package="cSEAdb"))
+
+plot_region <- "chr1:1156819-1178981"
+search_db_table <- search_db(plot_region,
+                             query_type="se_region",cSEAdb)
+
+bigWigs <- read.table("../../bw_path.txt",sep="\t",header=F)
+bw_gr <- create_bw_gr(plot_region,c(bigWigs$V1),se_spec_table=search_db_table)
+
+plot_out_2 <- create_gviz_tracks(bw_gr_list=bw_gr$bw_gr,
+                                 cell="specific",
+                                 se_spec_table=search_db_table,
+                                 plot_region=plot_region,
+                                 txdb=TxDb.Hsapiens.UCSC.hg38.knownGene)
+
+
+
+pdf("test/test.pdf",width = 6,
+    height = 10)
+plotTracks(c(plot_out_2$htrack,
+             plot_out_2$atrack_ce,
+             plot_out_2$atrack_se,
+             plot_out_2$atrack_query,
+             plot_out_2$axistrack,
+             plot_out_2$gtrack),
+           main= paste0("Query, ",plot_region),
+           cex.main=1,
+           size=10,
+           cex.title = 0.5)
+dev.off()
 
 
 
