@@ -178,7 +178,7 @@ plotTracks(c(plot_out_2$htrack,
              plot_out_2$atrack_query,
              plot_out_2$axistrack,
              plot_out_2$gtrack),
-           main= paste0("Query, ",plot_region),
+           main= paste0("Query by: ",'"',plot_region,'"'),
            cex.main=1,
            size=10,
            cex.title = 0.5)
