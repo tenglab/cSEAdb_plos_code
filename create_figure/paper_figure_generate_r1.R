@@ -48,26 +48,8 @@ ggplot(plot_df,
   ylab("Number of SE")+
   scale_fill_manual(values = c("grey70","purple4"))
 
-
-# differential, non-differential count
-tmp_all <- data.frame()
-for (p in 1:length(unique(pairsiwe_diff$data_pair))) {
-  tmp_1 <- pairsiwe_diff[which(pairsiwe_diff$data_pair==unique(pairsiwe_diff$data_pair)[p]),]
-  tmp_2 <- data.frame(data_pair=unique(pairsiwe_diff$data_pair)[p],
-                      differntial=tmp_1$count[which(tmp_1$approch=="DASE only")]+
-                        tmp_1$count[tmp_1$approch=="Common differential"],
-                      non_differntial=tmp_1$count[which(tmp_1$approch=="Common non-differential")]+
-                        tmp_1$count[which(tmp_1$approch=="Binary only")])
-  tmp_2$percentage <- tmp_2$differntial/(tmp_2$differntial+tmp_2$non_differntial)
-  tmp_all <- rbind(tmp_all,tmp_2)
-}
-
-
-ggplot(pairsiwe_diff,
-       aes(x=group,y=count,fill=group))+
-  geom_boxplot(width=0.5)+
-  #geom_errorbar(aes(ymin=mean-sd,ymax=mean+sd))+
-  theme_classic()
+write.table(pairsiwe_diff_2,"figs_df/supplementary_data/fig1a_1.txt",sep = "\t",row.names = F,quote = F)
+write.table(plot_df,"figs_df/supplementary_data/fig1a_2.txt",sep = "\t",row.names = F,quote = F)
 
 #-----------------------------------------------------
 # fig1c CE count
@@ -127,6 +109,8 @@ ggplot(ce_peak_plot_df_6, aes(x=as.factor(n_1), y=n,fill=group)) +
   xlab("Number of cell CE present")+
   ylab("Number of CE")
 
+write.table(ce_peak_plot_df_6,"figs_df/supplementary_data/fig1c.txt",sep = "\t",row.names = F,quote = F)
+
 
 #-------
 # fig1d
@@ -142,6 +126,7 @@ ggplot(binary_more_3, aes(x=as.factor(n_1), y=n)) +
   ylab("Number of CE")
 #theme(axis.text.x = element_blank())
 
+write.table(binary_more_3,"figs_df/supplementary_data/fig1d.txt",sep = "\t",row.names = F,quote = F)
 
 
 #-----------------------------------------------------
@@ -185,6 +170,8 @@ ce_keep_signal[,-1] <- ce_keep_signal[,-1]
 heatmap_df <- ce_keep_signal
 # raw signal use correlation
 cor_matrix <- cor(heatmap_df[,-1])
+
+write.table(cor_matrix,"figs_df/supplementary_data/fig1e_non_ce.txt",sep = "\t",quote = F)
 
 cancer_df <- cell_meta[which(cell_meta$Cancer %in% cancer_keep),c(1,2)]
 rownames(cancer_df) <- cancer_df$Cell_line
@@ -259,10 +246,10 @@ densities.qtiles <- data.frame(seq=seq(1:250),
                                q95=colQuantiles(as.matrix(plot_df[,c(251:500)]),
                                                 probs=0.95),
                                x_median=colMedians(as.matrix(plot_df[,c(1:250)])))
-
+write.table(densities.qtiles,"figs_df/supplementary_data/fig2b_cat2.txt",sep="\t",row.names = F,quote = F)
 
 # cat 1 and 3
-plot_df <- read.table("figs_df/fig2b_density_cat1.txt",sep="\t",header=T)
+plot_df <- read.table("figs_df/fig2b_density_cat3.txt",sep="\t",header=T)
 densities.qtiles <-
   plot_df %>%
   #rename(log_signal=x, dens = y) %>%
@@ -272,6 +259,8 @@ densities.qtiles <-
             q5 = quantile(y,0.05),
             q95=quantile(y,0.95),
             x_median=median(x))
+
+write.table(densities.qtiles,"figs_df/supplementary_data/fig2b_cat3.txt",sep="\t",row.names = F,quote = F)
 
 
 # plot
@@ -358,6 +347,8 @@ ggplot(signal_diff_plot,aes(x=group,y=log2(signal+1),fill=group))+
                              brewer.pal(8,"Blues")[8],
                              "grey50"))
 
+write.table(signal_diff_plot,"figs_df/supplementary_data/fig3a.txt",sep="\t",row.names = F,quote = F)
+
 
 nrow(signal_diff_plot[which(signal_diff_plot$group=="model only"),])/nrow(signal_diff_plot)*100
 nrow(signal_diff_plot[which(signal_diff_plot$group=="peak only"),])/nrow(signal_diff_plot)*100
@@ -424,6 +415,8 @@ ggplot(link_summary_2,aes(x=cell,y=n_link,fill=group))+
                                 brewer.pal(8,"Blues")[8],
                                 "grey50"))
 
+write.table(link_summary_2,"figs_df/supplementary_data/fig3b.txt",sep="\t",row.names = F,quote = F)
+
 #--------------
 # fig3c: target gene count
 #--------------
@@ -482,6 +475,9 @@ ggplot(link_summary_2,aes(x=cell,y=n_gene,fill=group))+
   scale_color_manual(values = c(brewer.pal(8,"Paired")[8],
                                 brewer.pal(8,"Blues")[8],
                                 "grey50"))
+
+write.table(link_summary_2,"figs_df/supplementary_data/fig3c.txt",sep="\t",row.names = F,quote = F)
+
 #------------
 # fig_3d
 #------------
@@ -520,6 +516,9 @@ ggplot(link_summary_2,aes(x=cell,y=ratio,fill=group))+
   scale_color_manual(values = c(brewer.pal(8,"Paired")[8],
                                 brewer.pal(8,"Blues")[8],
                                 "grey50"))
+
+write.table(link_summary_2,"figs_df/supplementary_data/fig3d.txt",sep="\t",row.names = F,quote = F)
+
 
 (mean(link_summary_2$ratio[which(link_summary_2$cell=="A549"&link_summary_2$group=="b0_m1")])+
     mean(link_summary_2$ratio[which(link_summary_2$cell=="HCT.116"&link_summary_2$group=="b0_m1")])+
@@ -569,6 +568,9 @@ ggplot(se_cluster_score,aes(x=cut,y=vi_score,group=1),alpha = 0.6)+
   theme(axis.text.x = element_text(size=10,angle=90),
         axis.title = element_text(size=16))
 
+write.table(se_cluster_score,"figs_df/supplementary_data/fig4a.txt",sep="\t",row.names = F,quote = F)
+
+
 # barplot
 se_spec_cancer_final <- read.table("results/final_se_cancer_spec_r1.txt",sep="\t",header=T)
 
@@ -608,6 +610,7 @@ length(loss_plot$se_name[!(loss_plot$se_name %in% se_both)])+length(se_both)
 
 write.table(gp_df,"figs_df/fig4d_bar_gain.txt",sep="\t",quote = F,row.names = F)
 write.table(lp_df,"figs_df/fig4e_bar_loss.txt",sep="\t",quote = F,row.names = F)
+
 gp_df <- read.table("figs_df/fig4d_bar_gain.txt",sep="\t",header=T)
 lp_df <- read.table("figs_df/fig4e_bar_loss.txt",sep="\t",header=T)
 
@@ -635,10 +638,11 @@ plot_df_erna <- read.table("figs_df/fig4c_eRNA_r1.txt",sep="\t",header=T)
 # pvalue
 # calculate p-value
 cell_line <- c("A549","MCF7","HCT-116","K-562")
+plot_df_2 <- plot_df
+
 cell_line <- c("A549_pro_seq","K562_PROseq_GEO")
-
-
 plot_df_2 <- plot_df_erna
+
 pvalue <- data.frame()
 for (c in 1:length(cell_line)) {
   tmp_link <- plot_df_2[which(plot_df_2$cell==cell_line[c]),]
@@ -667,6 +671,13 @@ ggplot(plot_df_2[which(plot_df_2$cell %in% cell_line),],aes(x=cell,y=log2(signal
   ylim(c(0,3))+
   scale_fill_manual(values=c("firebrick","lightskyblue","grey50"))
 
+plot_df_3 <- plot_df_2[which(plot_df_2$cell %in% cell_line),]
+
+plot_df_3$signal <- log2(plot_df_3$signal+1)/plot_df_3$width*1000
+
+write.table(plot_df_3,"figs_df/supplementary_data/fig4b.txt",sep="\t",row.names = F,quote = F)
+
+
 #------------------------
 # fig4f SE summary
 #------------------------
@@ -674,10 +685,10 @@ cSEAdb <- readRDS("results/cSEAdb_r1.rds")
 se_sepc <- cSEAdb$se_specificity
 se_sepc_cancer <- se_sepc[which(se_sepc$object_type=="cancer"),]
 se_all <- cSEAdb$se_bed
-# summary SE based on specifity
-se_gain <- unique(se_sepc_cancer$se_name[which(se_sepc_cancer$specifity=="gain")])
-se_loss <- unique(se_sepc_cancer$se_name[which(se_sepc_cancer$specifity=="loss")])
-se_none <- unique(se_sepc_cancer$se_name[which(se_sepc_cancer$specifity=="none")])
+# summary SE based on specificity
+se_gain <- unique(se_sepc_cancer$se_name[which(se_sepc_cancer$specificity=="active")])
+se_loss <- unique(se_sepc_cancer$se_name[which(se_sepc_cancer$specificity=="inactive")])
+se_none <- unique(se_sepc_cancer$se_name[which(se_sepc_cancer$specificity=="none")])
 se_both <- intersect(se_gain,se_loss)
 
 
@@ -695,10 +706,45 @@ ggplot(plot_d,aes(x=group,y=value,fill=group))+
                                "lightskyblue",
                                "grey50"))
 
+write.table(plot_d,"figs_df/supplementary_data/fig4f.txt",sep="\t",row.names = F,quote = F)
+
+
 #-----------------------------------
 # supplementary
 #-----------------------------------
+#------------
 # fig_s1
+
+se_width <- read.table("results/se_test_summary_0.01.txt",sep="\t",header=T)
+ce_width <- read.table("results/ce_width_summary_0.01.txt",sep="\t",header=T)
+
+plot_df <- se_width[which(se_width$group %in% seq(0,0.26,0.01)),]
+
+plot_df <- ce_width[which(ce_width$group %in% seq(0.09,0.31,0.01)),]
+
+ggplot(se_width,aes(x=group,y=log2(median)))+
+  geom_line()+
+  #geom_smooth(span=0.9)+
+  theme_classic()
+
+ggplot(se_width,aes(x=group,y=log2(n)))+
+  geom_line()+
+  #geom_smooth(span=0.9)+
+  theme_classic()
+
+ggplot(ce_width,aes(x=group,y=log2(median)))+
+  geom_line()+
+  #geom_smooth(span=0.9)+
+  theme_classic()
+
+ggplot(ce_width,aes(x=group,y=log2(n)))+
+  geom_line()+
+  #geom_smooth(span=0.9)+
+  theme_classic()
+
+
+#------------
+# fig_s2
 mix_per_cell <- read.table("figs_df/fig_s1_mix_piror.txt",sep="\t",header=T)
 
 plot_df <- gather(mix_per_cell,group,mean,m_1:m_2)
@@ -707,9 +753,11 @@ ggplot(plot_df,aes(x=group,y=mean,fill=group))+
   geom_jitter(shape=16, position=position_jitter(0.2))+
   theme_classic()
 
+write.table(plot_df,"figs_df/supplementary_data/figS2.txt",sep="\t",row.names = F,quote = F)
+
 
 #------------
-# fig_s2
+# fig_s4
 
 cSEAdb <- readRDS("results/cSEAdb_r1.rds")
 se_df <- cSEAdb$se_bed
@@ -759,8 +807,11 @@ ggplot(se_cout_freq,aes(x=Var1,y=Freq))+
   theme_classic()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
+write.table(se_cout_freq,"figs_df/supplementary_data/figS4.txt",sep="\t",row.names = F,quote = F)
+
+
 #------------
-# fig_s4
+# fig_s6
 mixture_model <- read.table("results/filtered_ce_mixture_model_r1.txt",sep="\t",header=T)
 ce_peak_w_percent <- read.table("results/s1_ce_binary_w_percent.txt",sep="\t",header=T)
 
@@ -784,25 +835,11 @@ ggplot(final_plot_df, aes(x=number_of_1,fill=group,color=group)) +
                               brewer.pal(8,"Paired")[8]))+
   xlab("Number of cell CE present")
 
-#------------
-# fig_s5
-mixture_model <- read.table("results/filtered_ce_mixture_model_r1.txt",sep="\t",header=T)
-ce_peak_w_percent <- read.table("results/s1_ce_binary_w_percent.txt",sep="\t",header=T)
-
-tmp_1 <- ce_peak_w_percent[which(ce_peak_w_percent$max_percent>3),]
-tmp_1$rowmean <- rowMeans(tmp_1[,c(4:63)])
-plot_df <- data.frame(group=c("peak","model"),
-                      value=c(length(unique(tmp_1$ce_name[which(tmp_1$rowmean==1)])),
-                              length(unique(mixture_model$ce_name[which(mixture_model$rowmean==1)]))))
-plot_df$group <- factor(plot_df$group,levels=c("peak","model"))
-ggplot(plot_df,aes(x=group,y=value,fill=group))+
-  geom_bar(stat="identity",color="black",width=0.5)+
-  theme_classic()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+write.table(final_plot_df,"figs_df/supplementary_data/figS6.txt",sep="\t",row.names = F,quote = F)
 
 
 #------------
-# fig_s6
+# fig_s9
 plot_df_erna <- read.table("figs_df/fig4c_eRNA_r1.txt",sep="\t",header=T)
 
 # pvalue
@@ -819,17 +856,23 @@ ggplot(plot_df_2,aes(x=cell,y=log2(signal+1)/width*1000,fill=group))+
   ylim(c(0,6))+
   scale_fill_manual(values=c("firebrick","lightskyblue","grey50"))
 
+
+plot_df_2$signal <- log2(plot_df_2$signal+1)/plot_df_2$width*1000
+
+write.table(plot_df_2,"figs_df/supplementary_data/figS9.txt",sep="\t",row.names = F,quote = F)
+
+
 #------------
-# fig_s7
+# fig_s10
 plot_df <- read.table("figs_df/fig4b_reporter_assay_r1.txt",sep="\t",header=T)
 plot_df_erna <- read.table("figs_df/fig4c_eRNA_r1.txt",sep="\t",header=T)
 
-cell_line <- c("A549","MCF7","HCT-116","K-562")
-cell_line <- c("A549_pro_seq","K562_PROseq_GEO")
-
 # pvalue
 # calculate p-value
+cell_line <- c("A549_pro_seq","K562_PROseq_GEO")
 plot_df_2 <- plot_df_erna[which(plot_df_erna$cell %in% cell_line),]
+
+cell_line <- c("A549","MCF7","HCT-116","K-562")
 plot_df_2 <- plot_df
 
 
@@ -842,20 +885,10 @@ ggplot(plot_df_2,aes(x=cell,y=log2(signal+1),fill=group))+
   ylim(c(0,5))+
   scale_fill_manual(values=c("firebrick","lightskyblue","grey50"))
 
+plot_df_2$signal <- log2(plot_df_2$signal+1)
 
-#------------
-# fig_s11
+write.table(plot_df_2,"figs_df/supplementary_data/figS10_assay.txt",sep="\t",row.names = F,quote = F)
 
-se_width <- read.table("results/se_test_summary_0.01.txt",sep="\t",header=T)
-ce_width <- read.table("results/ce_width_summary_0.01.txt",sep="\t",header=T)
-
-plot_df <- se_width[which(se_width$group %in% seq(0,0.26,0.01)),]
-plot_df <- ce_width[which(ce_width$group %in% seq(0.09,0.31,0.01)),]
-
-ggplot(plot_df,aes(x=group,y=log2(n)))+
-  geom_line()+
-  #geom_smooth(span=0.9)+
-  theme_classic()
 
 
 #------------

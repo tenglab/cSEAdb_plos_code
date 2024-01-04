@@ -63,6 +63,9 @@ ggplot(se_test,aes(x=group,y=log2(width),color=group))+
   geom_violin()
 
 # set overlap to 25%
+se_reduce <- as.data.frame(group_se_by_overlap(se_gr,0.25))
+se_reduce_bed <- se_reduce[,c(1:3)]
+
 write.table(se_reduce_bed,"se_reduce_r1.bed",
             sep="\t",row.names = F,quote=F,col.names = F)
 
@@ -80,7 +83,7 @@ percentage <- seq(0,1,0.05)
 ce_test_summary <-data.frame()
 for (p in 1:length(percentage)) {
   print(p)
-  e_reduce_tmp <- as.data.frame(group_se_by_overlap(e_gr,0.25))
+  e_reduce_tmp <- as.data.frame(group_se_by_overlap(e_gr,percentage[p]))
   e_bed <- e_reduce_tmp[,c(1:3)]
   e_bed$group <- as.character(percentage[p])
   e_bed$width <- e_bed$end-e_bed$start+1
@@ -112,6 +115,8 @@ plot(ce_test_summary$group,ce_test_summary$mean,type="l",ylab="mean",xlab="perce
 plot(ce_test_summary$group,ce_test_summary$n,type="l",ylab="n",xlab="percentage")
 
 
+e_reduce_tmp <- as.data.frame(group_se_by_overlap(e_gr,0.25))
+e_bed <- e_reduce_tmp[,c(1:3)]
 
 write.table(e_bed,"all_enhancer_reduce_filtered.bed",
             sep="\t",row.names = F,quote=F,col.names = F)
